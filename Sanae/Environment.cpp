@@ -1,4 +1,4 @@
-//#include "Sanae.h"
+#include "Sanae.h"
 #include "Environment.h"
 
 #include <iostream>
