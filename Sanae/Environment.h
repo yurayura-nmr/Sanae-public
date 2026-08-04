@@ -1,14 +1,14 @@
 ﻿/**
-* @file Environment.h
-* @brief Defines the NMR environment parameters for Sanae simulations.
-*
-* Represents spectrometer and spin-environment settings such as magnetic
-* field strength, gyromagnetic ratio, and derived Larmor frequencies.
-*
-* @note Only a minimal subset of fields is currently used. Additional
-*       attributes (e.g., B1 fields, offsets, tilt angles) are reserved
-*       for future extensions.
-*/
+ * @file Environment.h
+ * @brief Defines the NMR environment parameters for Sanae simulations.
+ *
+ * Represents spectrometer and spin-environment settings such as magnetic
+ * field strength, gyromagnetic ratio, and derived Larmor frequencies.
+ *
+ * @note Only a minimal subset of fields is currently used. Additional
+ *       attributes (e.g., B1 fields, offsets, tilt angles) are reserved
+ *       for future extensions.
+ */
 
 #pragma once
 

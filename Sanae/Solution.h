@@ -48,7 +48,7 @@ namespace Sanae
 		void SetMethod(const int method);
 		void SetPF(const int customPF);
 		void SetDT(const double customDT);
-		void SetSteps(const double customSteps);
+		void SetSteps(const int customSteps);
 		void SetNumericPars();
 
 		void SetCrossterm(const double k_ij, Sanae::State FirstState, Sanae::State SecondState);
@@ -65,7 +65,7 @@ namespace Sanae
 		void DisplayInfo() const;
 
 		void SetOutputFilename(const std::string &filename);
-		void writeLog(const std::string message, Eigen::MatrixXcd &A);
-		void writeLog(const std::string message, Eigen::VectorXcd &vector);
+		void writeLog(const std::string message, Eigen::MatrixXcd &A) const;
+		void writeLog(const std::string message, Eigen::VectorXcd &vector) const;
 	};
 }

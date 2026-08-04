@@ -1,5 +1,4 @@
-// test.cpp
-// g++ -std=c++17 -Wall -o test_env ../Environment.cpp test.cpp
+// g++ -std=c++17 -Wall -o test_env ../Environment.cpp test_env.cpp
 
 #include "../Environment.h"
 #include <iostream>
