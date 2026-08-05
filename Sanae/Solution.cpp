@@ -1,10 +1,9 @@
 #include "Solution.h"
 #include "State.h"
 #include "RungeKutta.h"
-#include "noise.h"
+#include "fileio.h"
+// #include "noise.h"
 
-#include <fstream>
-#include <vector>
 #include <iostream>
 
 namespace Sanae
@@ -24,7 +23,7 @@ namespace Sanae
 		}
 		else if (size == 3)
 		{
-			// 3-state exchange (F <-> I <-> B)
+			// 3-state exchange linear (F <-> I <-> B)
 			K_ = Eigen::MatrixXcd::Zero(3, 3);
 		}
 		else
@@ -45,6 +44,7 @@ namespace Sanae
 	{
 		dt_ = customDT;
 	} // Set the time step duration
+
 	void Solution::SetSteps(const int customSteps)
 	{
 		num_steps_ = customSteps;
@@ -54,11 +54,11 @@ namespace Sanae
 	{
 		// Set default numerical parameters for the simulation
 		// Note: Modifying these parameters may affect the time axis in sanaeplot.py; verify any changes
-		this->SetMethod(1);	   // Use Runge-Kutta (R-K) method
-		this->SetPF(10);	   // Print results every 10 steps
-		this->SetDT(0.00001);  // Set timestep to 10 microseconds
-		this->SetSteps(20000); // 20000 steps at 10 ƒÊs = 0.2 seconds total simulation time; 2000 print intervals
-		this->DisplayInfo();   // Display current settings to the user
+		SetMethod(1);	 // Use Runge-Kutta (R-K) method
+		SetPF(10);		 // Print results every 10 steps
+		SetDT(0.00001);	 // Set timestep to 10 microseconds
+		SetSteps(20000); // 20000 steps at 10 microseconds = 0.2 seconds total simulation time; 2000 print intervals
+		DisplayInfo();	 // Display current settings to the user
 	}
 
 	void Solution::SetNoExchange(Sanae::State &A, Sanae::State &B)
@@ -67,42 +67,12 @@ namespace Sanae
 		double k_ab = 0; // Rate of transition from state A to B is zero
 		double k_ba = 0; // Rate of transition from state B to A is zero
 
-		this->SetCrossterm(k_ab, A, B); // Set off-diagonal (cross) terms for A <> B transitions
-		this->SetCrossterm(k_ba, B, A); // Set off-diagonal (cross) terms for B <> A transitions
+		SetCrossterm(k_ab, A, B); // Set off-diagonal (cross) terms for A <> B transitions
+		SetCrossterm(k_ba, B, A); // Set off-diagonal (cross) terms for B <> A transitions
 
 		// Set diagonal terms in the exchange matrix
 		// Diagonal terms are set in the order upper left to lower right : 11, 22, ...
-		this->SetDiagonaltermsTwoState(k_ab, k_ba, A, B); // Diagonal terms: k_11 for A, k_22 for B
-	}
-
-	void Solution::writeLog(const std::string message, Eigen::MatrixXcd &A) const
-	{
-		// Open the log file
-		std::ofstream logFile("sanae_simulation.log", std::ios_base::app); // Use append mode
-
-		// Check if log file opened successfully
-		if (!logFile)
-		{
-			std::cerr << "Failed to open log file!" << std::endl;
-			return;
-		}
-
-		// Write to the log file
-		logFile << message << A << "\n";
-	}
-
-	// Overload for vectors
-	void Solution::writeLog(const std::string message, Eigen::VectorXcd &vector) const
-	{
-		std::ofstream logFile("sanae_simulation.log", std::ios_base::app);
-
-		if (!logFile)
-		{
-			std::cerr << "Failed to open log file!" << std::endl;
-			return;
-		}
-
-		logFile << message << vector << "\n";
+		SetDiagonaltermsTwoState(k_ab, k_ba, A, B); // Diagonal terms: k_11 for A, k_22 for B
 	}
 
 	int Solution::GetSteps() const
@@ -124,10 +94,10 @@ namespace Sanae
 	{
 		// Display key simulation parameters to the console
 		std::cout << "\nInformation on Solution (FID)\n"
-				  << "Integration timestep (= FID point spacing)   [s] = " << this->dt_ << "\n"
-				  << "Number of timesteps (= total FID points)         = " << this->num_steps_ << "\n"
-				  << "Output frequency                                 = " << this->printFrequency_ << "\n"
-				  << "Integration method (0: Euler | 1: Runge-Kutta)   = " << this->method_ << "\n"
+				  << "Integration timestep (= FID point spacing)   [s] = " << dt_ << "\n"
+				  << "Number of timesteps (= total FID points)         = " << num_steps_ << "\n"
+				  << "Output frequency                                 = " << printFrequency_ << "\n"
+				  << "Integration method (0: Euler | 1: Runge-Kutta)   = " << method_ << "\n"
 				  << std::endl;
 	}
 
@@ -136,11 +106,11 @@ namespace Sanae
 		// Set off-diagonal cross-term in exchange matrix K_ for the exchange between two states
 		const double first_id_ = FirstState.GetID();   // Get the ID of the first state
 		const double second_id_ = SecondState.GetID(); // Get the ID of the second state
-		this->K_(second_id_, first_id_) = k_ij;		   // Update the exchange matrix with the cross-term value
+		K_(second_id_, first_id_) = k_ij;			   // Update the exchange matrix with the cross-term value
 
-		// Print the updated exchange matrix and the involved states
-		std::cout << "\n[ ... Adding cross-term to exchange matrix ... ]\n"
-				  << K_ << "\nfor exchange between: " << first_id_ << " and " << second_id_ << "\n";
+		// Debug: Print the updated exchange matrix and the involved states
+		// std::cout << "\n[ ... Adding cross-term to exchange matrix ... ]\n"
+		//		  << K_ << "\nfor exchange between: " << first_id_ << " and " << second_id_ << "\n";
 	}
 
 	void Solution::SetDiagonaltermsTwoState(const double k_11, const double k_22, Sanae::State FirstState, Sanae::State SecondState)
@@ -153,12 +123,12 @@ namespace Sanae
 		const double second_id_ = SecondState.GetID(); // Get the ID of the second state
 
 		// Update the diagonal terms: for a two-state system, this is straightforward
-		this->K_(first_id_, first_id_) = -k_11;
-		this->K_(second_id_, second_id_) = -k_22;
+		K_(first_id_, first_id_) = -k_11;
+		K_(second_id_, second_id_) = -k_22;
 
-		// Print the updated matrix and the states involved in the decay process
-		std::cout << "[ ... Adding diagonal-term to exchange matrix ... ]\n"
-				  << K_ << "\nfor decay of: " << first_id_ << " due to the presence of State " << second_id_ << " \n";
+		// Debug: Print the updated matrix and the states involved in the decay process
+		// std::cout << "[ ... Adding diagonal-term to exchange matrix ... ]\n"
+		//		  << K_ << "\nfor decay of: " << first_id_ << " due to the presence of State " << second_id_ << " \n";
 	}
 
 	void Solution::SetDiagonaltermsThreeState(const double k_11, const double k_22, const double k_33, Sanae::State FirstState, Sanae::State SecondState, Sanae::State ThirdState)
@@ -172,13 +142,13 @@ namespace Sanae
 		const double third_id_ = ThirdState.GetID();   // Get the ID of the third state
 
 		// Update diagonal terms for each state, accounting for contributions from one (A,C) or multiple (B) exchanges
-		this->K_(first_id_, first_id_) = -k_11;	  // Decay for first state (A)
-		this->K_(second_id_, second_id_) = -k_22; // Decay for second state (B), combines contributions from A and C
-		this->K_(third_id_, third_id_) = -k_33;	  // Decay for third state (C)
+		K_(first_id_, first_id_) = -k_11;	// Decay for first state (A)
+		K_(second_id_, second_id_) = -k_22; // Decay for second state (B), combines contributions from A and C
+		K_(third_id_, third_id_) = -k_33;	// Decay for third state (C)
 
-		// Print the updated matrix and the states involved in the decay process
-		std::cout << "[ ... Adding diagonal-term to exchange matrix ... ]\n"
-				  << K_ << "\nfor decay of: " << first_id_ << " due to the presence of State " << second_id_ << " \n";
+		// Debug: Print the updated matrix and the states involved in the decay process
+		// std::cout << "[ ... Adding diagonal-term to exchange matrix ... ]\n"
+		//		  << K_ << "\nfor decay of: " << first_id_ << " due to the presence of State " << second_id_ << " \n";
 	}
 
 	void Solution::SetupThreeState(Sanae::State &StateA, Sanae::State &StateB, Sanae::State &StateC)
@@ -192,10 +162,8 @@ namespace Sanae
 		M.col(0) = M_zero;														 // Set the first column to M(t=0), i.e., the equilibrium magnetization
 
 		// Initialize matrices for solving the ODEs based on the Bloch equations
-		Eigen::MatrixXcd A(3, 3);		// Bloch-McConnell matrix (total system evolution)
-		Eigen::MatrixXcd R(3, 3);		// Relaxation and chemical shift matrix
-		Eigen::MatrixXcd K_total(3, 3); // Exchange matrix (K)
-		Eigen::MatrixXcd debug(3, 3);	// Debugging matrix (for intermediate checks)
+		Eigen::MatrixXcd A(3, 3); // Bloch-McConnell matrix (total system evolution)
+		Eigen::MatrixXcd R(3, 3); // Relaxation and chemical shift matrix
 
 		// Define relaxation and chemical shift terms for better readability
 		double mR2_A = -StateA.GetR2(); // Negative R2 relaxation rate for State A
@@ -209,32 +177,32 @@ namespace Sanae
 		// *** Relaxation and chemical shift contributions ***
 		// Matrix R: contains relaxation rates and chemical shifts for each state
 		//   M_A                    M_B
-		R << (mR2_A + 1.0i * CS_A), 0.0, 0.0,
-			0.0, (mR2_B + 1.0i * CS_B), 0.0,
-			0.0, 0.0, (mR2_C + 1.0i * CS_C);
+		R << std::complex<double>(mR2_A, CS_A), 0.0, 0.0,
+			0.0, std::complex<double>(mR2_B, CS_B), 0.0,
+			0.0, 0.0, std::complex<double>(mR2_C, CS_C);
 
 		// Combine relaxation/chemical shift matrix R with the exchange matrix K to form the full Bloch-McConnell matrix
-		A = R + this->GetK();
+		A = R + GetK();
 
 		// Output the final matrix for inspection
 		std::cout << "[... Final matrix is set to ...] :\n"
 				  << A << "\n";
 
 		// Output log to enable reproducibility
-		writeLog("[... Initial magnetization is set to ...] :\n", M_zero);
-		writeLog("[... Final matrix is set to ...] :\n", A);
+		appendToLog("[... Initial magnetization is set to ...] :\n", M_zero);
+		appendToLog("[... Final matrix is set to ...] :\n", A);
 
-		if (this->method_ == 1)
+		if (method_ == 1)
 		{
 			// Solving dM/dt = A * M(0) using the 4th-order Runge-Kutta method
 			std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n"
 					  << std::endl;
-			RungeKutta(A, M, this->dt_, this->num_steps_);
+			RungeKutta(A, M, dt_, num_steps_);
 
 			// Optional add noise
-			//AddGaussianNoise(M, 0.0, -1);
+			// AddGaussianNoise(M, 0.0, -1);
 		}
-		else if (this->method_ == 0)
+		else if (method_ == 0)
 		{
 			// Euler method is not implemented
 			std::cout << "\n[... Euler method is not yet implemented. Use Runge-Kutta. ...]\n"
@@ -258,36 +226,10 @@ namespace Sanae
 		// Debug
 		// std::cout << "\n[... Time Evolution of total Magnetization A+B throughout the experiment ...]\n[M+(t)] = \n" << M_plus_AB << std::endl;
 
-		// Write the time evolution of the magnetization (M+) to a file
-		// Transpose M+ matrix to organize data for output
-		Eigen::MatrixXcd M_plus_transposed = M_plus_ABC.transpose();
-
 		// Open output file to store magnetization data
-		std::ofstream outputFile(output_filename_);
-		if (!outputFile.is_open())
+		if (!writeMagnetizationToFile(M_plus_ABC, output_filename_, dt_, num_steps_, printFrequency_))
 		{
-			std::cerr << "Error opening output file!\n";
-		}
-		else
-		{
-			// --- Write simulation header ---
-			// sanaeplot.py reads dt and steps from here, eliminating manual synchronisation
-			// Format: # KEY = VALUE  (lines starting with # are skipped by numpy.loadtxt)
-			outputFile << "# SANAE simulation output\n";
-			outputFile << "# dt = " << this->dt_ << "\n";
-			outputFile << "# steps = " << this->num_steps_ << "\n";
-			outputFile << "# print_every = " << this->printFrequency_ << "\n";
-
-			// Loop through the transposed M+ matrix and write the data to the file
-			// Only print data at specified intervals (defined by printFrequency_)
-			for (int i = 0; i < M_plus_transposed.rows(); ++i)
-			{
-				if (i % this->printFrequency_ == 0)
-				{
-					// Write real and imaginary parts (Mx, My) of the magnetization to the file
-					outputFile << M_plus_transposed(i).real() << " " << M_plus_transposed(i).imag() << std::endl;
-				}
-			}
+			return;
 		}
 	}
 
@@ -307,10 +249,8 @@ namespace Sanae
 		M.col(0) = M_zero;									// Set the initial magnetization for t=0
 
 		// Define the matrices to solve the ODEs (Bloch equations) for magnetization evolution
-		Eigen::MatrixXcd A(2, 2);		// Total matrix (Bloch-McConnell matrix)
-		Eigen::MatrixXcd R(2, 2);		// Relaxation and chemical shift matrix
-		Eigen::MatrixXcd K_total(2, 2); // Exchange matrix (used later)
-		Eigen::MatrixXcd debug(2, 2);
+		Eigen::MatrixXcd A(2, 2); // Total matrix (Bloch-McConnell matrix)
+		Eigen::MatrixXcd R(2, 2); // Relaxation and chemical shift matrix
 
 		// Define variables to represent relaxation rates and chemical shifts for States A and B
 		double mR2_A = -StateA.GetR2();		// Relaxation rate for State A (negative of R2)
@@ -321,29 +261,29 @@ namespace Sanae
 		// *** Define relaxation and chemical shift matrix ***
 		// Diagonal matrix with relaxation and chemical shifts for State A and State B
 		//   M_A                    M_B
-		R << (mR2_A + 1.0i * CS_A), 0.0,
-			0.0, (mR2_B + 1.0i * CS_B);
+		R << std::complex<double>(mR2_A, CS_A), 0.0,
+			0.0, std::complex<double>(mR2_B, CS_B);
 
 		// Add exchange terms (from matrix K) to the relaxation matrix to form the full Bloch-McConnell matrix
-		A = R + this->GetK();
+		A = R + GetK();
 
 		// Output the final matrix to be used in time evolution
 		std::cout << "[... Final matrix is set to ...] :\n"
 				  << A << "\n";
 
 		// Output log to enable reproducibility
-		writeLog("[... Initial magnetization is set to ...] :\n", M_zero);
-		writeLog("[... Final matrix is set to ...] :\n", A);
+		appendToLog("[... Initial magnetization is set to ...] :\n", M_zero);
+		appendToLog("[... Final matrix is set to ...] :\n", A);
 
 		// Solve the ODE using the specified integration method
-		if (this->method_ == 1)
+		if (method_ == 1)
 		{
 			// Solve using 4th-order Runge-Kutta method
 			std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n"
 					  << std::endl;
-			RungeKutta(A, M, this->dt_, this->num_steps_);
+			RungeKutta(A, M, dt_, num_steps_);
 		}
-		else if (this->method_ == 0)
+		else if (method_ == 0)
 		{
 			// Placeholder for Euler method (if needed)
 		}
@@ -361,37 +301,10 @@ namespace Sanae
 		std::cout << "\n[... Relaxation matrix determining the physics of the 2-state exchange process ...]\nA = \n"
 				  << A << std::endl;
 
-		// Debug
-		// std::cout << "\n[... Time Evolution of total Magnetization A+B throughout the experiment ...]\n[M+(t)] = \n" << M_plus_AB << std::endl;
-
-		// Write the time evolution of the magnetization (M+) to a file
-		Eigen::MatrixXcd M_plus_transposed = M_plus_AB.transpose(); // Transpose the matrix for easier file output
-
-		// Open a file to write the magnetization data
-		std::ofstream outputFile(output_filename_);
-		if (!outputFile.is_open())
+		// --- Write M(t) to file -----------------------------------------------
+		if (!writeMagnetizationToFile(M_plus_AB, output_filename_, dt_, num_steps_, printFrequency_))
 		{
-			std::cerr << "Error opening output file!\n";
-		}
-		else
-		{
-			// --- Write simulation header ---
-			// sanaeplot.py reads dt and steps from here, eliminating manual synchronisation
-			// Format: # KEY = VALUE  (lines starting with # are skipped by numpy.loadtxt)
-			outputFile << "# SANAE simulation output\n";
-			outputFile << "# dt = " << this->dt_ << "\n";
-			outputFile << "# steps = " << this->num_steps_ << "\n";
-			outputFile << "# print_every = " << this->printFrequency_ << "\n";
-
-			// Loop through and write the time evolution data (only at intervals specified by printFrequency_)
-			for (int i = 0; i < M_plus_transposed.rows(); ++i)
-			{
-				if (i % this->printFrequency_ == 0)
-				{
-					// Write the real and imaginary components (Mx and My) of the magnetization
-					outputFile << M_plus_transposed(i).real() << " " << M_plus_transposed(i).imag() << std::endl;
-				}
-			}
+			return;
 		}
 	}
 
@@ -407,27 +320,26 @@ namespace Sanae
 
 		// --- Construct the 1x1 Bloch matrix A ----------------------------------
 		// Relaxation: -R2
-		// Chemical shift: + i * ƒ¢ƒÖ
+		// Chemical shift: + i * w
 		double mR2 = -StateA.GetR2();
 		double w = StateA.GetCS_rad_s(); // rad/s offset
 
 		Eigen::MatrixXcd A(1, 1);
 		A(0, 0) = std::complex<double>(mR2, w);
 
-		// Log for reproducibility
-		writeLog("[... Initial magnetization is set to ...] :\n", M_zero);
-		writeLog("[... Final matrix is set to ...] :\n", A);
+		appendToLog("[... Initial magnetization is set to ...] :\n", M_zero);
+		appendToLog("[... Final matrix is set to ...] :\n", A);
 
 		std::cout << "[... Final matrix is set to ...] :\n"
 				  << A << "\n";
 
 		// --- Solve ODE dM/dt = A * M ------------------------------------------
-		if (this->method_ == 1)
+		if (method_ == 1)
 		{
 			std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n";
-			RungeKutta(A, M, this->dt_, this->num_steps_);
+			RungeKutta(A, M, dt_, num_steps_);
 		}
-		else if (this->method_ == 0)
+		else if (method_ == 0)
 		{
 			// Optional Euler implementation
 		}
@@ -437,38 +349,15 @@ namespace Sanae
 		Eigen::MatrixXcd M_plus_T = M_plus.transpose();
 
 		// --- Output M(t) to file ----------------------------------------------
-		std::ofstream outputFile(output_filename_);
-
-		if (!outputFile.is_open())
+		if (!writeMagnetizationToFile(M_plus, output_filename_, dt_, num_steps_, printFrequency_))
 		{
-			std::cerr << "Error opening output file!\n";
 			return;
 		}
-		else
-		{
-			// TODO - Test this. So far not tested.
 
-			// --- Write simulation header ---
-			// sanaeplot.py reads dt and steps from here, eliminating manual synchronisation
-			// Format: # KEY = VALUE  (lines starting with # are skipped by numpy.loadtxt)
-			outputFile << "# SANAE simulation output\n";
-			outputFile << "# dt = " << this->dt_ << "\n";
-			outputFile << "# steps = " << this->num_steps_ << "\n";
-			outputFile << "# print_every = " << this->printFrequency_ << "\n";
-
-			for (int i = 0; i < M_plus_T.rows(); ++i)
-			{
-				if (i % this->printFrequency_ == 0)
-				{
-					outputFile << M_plus_T(i).real() << " "
-							   << M_plus_T(i).imag() << "\n";
-				}
-			}
-
-			std::cout << "\n[... Magnetization at the start ...]\nM(0) = "
-					  << M_zero.real() << "\n";
-			std::cout << "\n[... Relaxation matrix for 1-state ...]\nA = "
-					  << A << "\n";
-		}
+		// (Keep any debug prints you still want – these can also be removed for quiet output)
+		std::cout << "\n[... Magnetization at the start ...]\nM(0) = "
+				  << M_zero.real() << "\n";
+		std::cout << "\n[... Relaxation matrix for 1-state ...]\nA = "
+				  << A << "\n";
 	}
 }

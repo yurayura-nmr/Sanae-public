@@ -65,7 +65,5 @@ namespace Sanae
 		void DisplayInfo() const;
 
 		void SetOutputFilename(const std::string &filename);
-		void writeLog(const std::string message, Eigen::MatrixXcd &A) const;
-		void writeLog(const std::string message, Eigen::VectorXcd &vector) const;
 	};
 }
