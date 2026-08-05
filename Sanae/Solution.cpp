@@ -85,10 +85,11 @@ namespace Sanae
 		return K_;
 	}
 
-	void Solution::SetMethod(const int method)
+	void Solution::SetMethod(const int /*method*/)
 	{
-		method_ = method;
-	} // Set the numerical integration method (Euler or Runge-Kutta)
+		// Deprecated: only Runge-Kutta is supported.
+		// Intentionally left empty to avoid breaking existing calls.
+	}
 
 	void Solution::DisplayInfo() const
 	{
@@ -202,12 +203,6 @@ namespace Sanae
 			// Optional add noise
 			// AddGaussianNoise(M, 0.0, -1);
 		}
-		else if (method_ == 0)
-		{
-			// Euler method is not implemented
-			std::cout << "\n[... Euler method is not yet implemented. Use Runge-Kutta. ...]\n"
-					  << std::endl;
-		}
 
 		// Extract solved magnetization for each state: A, B, and C
 		Eigen::MatrixXcd M_A_solved = M.row(0); // Magnetization for State A
@@ -283,10 +278,6 @@ namespace Sanae
 					  << std::endl;
 			RungeKutta(A, M, dt_, num_steps_);
 		}
-		else if (method_ == 0)
-		{
-			// Placeholder for Euler method (if needed)
-		}
 
 		// Combine magnetization components for State A and B into a single quantity M+ (only M+ observed in NMR)
 		Eigen::MatrixXcd M_A_solved = M.row(0); // Magnetization for State A
@@ -338,10 +329,6 @@ namespace Sanae
 		{
 			std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n";
 			RungeKutta(A, M, dt_, num_steps_);
-		}
-		else if (method_ == 0)
-		{
-			// Optional Euler implementation
 		}
 
 		// --- Extract the only magnetization component (M+) ---------------------
