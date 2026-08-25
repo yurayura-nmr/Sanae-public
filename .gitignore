@@ -8,3 +8,8 @@ Sanae/tests/magnetization_evolution.txt
 Sanae/tests/test_binding
 Sanae/tests/test_cleanex
 Sanae/tests/test_cleanex_basic.dat
+Sanae/tests/test_cpmg
+Sanae/tests/test_cr_13C.dat
+Sanae/tests/test_cr_nodw_13C.dat
+Sanae/tests/tmp/cpmg_utils.cpp
+Sanae/tests/tmp/cpmg_utils.h

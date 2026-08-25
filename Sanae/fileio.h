@@ -37,6 +37,19 @@ namespace Sanae
                                  double R1b,
                                  double prefactor);
 
+    // Write a CPMG-style dispersion curve (nu_CPMG vs R2eff) to a tab-separated
+    // file with a descriptive header. model_label distinguishes e.g.
+    // "Carver-Richards" vs "Luz-Meiboom" in the file header comment.
+    bool writeCpmgCurveToFile(const std::string &filename,
+                              const std::vector<double> &nu_vec,
+                              const std::vector<double> &R2eff_vec,
+                              double kex,
+                              double dw_ppm,
+                              double B0_MHz,
+                              double pA,
+                              double R20,
+                              const std::string &model_label);
+
     /**
      * @brief Append a matrix to the simulation log file (sanae_simulation.log).
      *
