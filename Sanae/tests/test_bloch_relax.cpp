@@ -4,17 +4,19 @@
 #include <iostream>
 #include <fstream>
 #include <cassert>
-#include <sstream>   // for std::stringstream
-#include <cmath>     // for std::sqrt, std::abs
+#include <sstream>
+#include <cmath>
 #include <string>
 
 // Helper to check if file exists and is non‑empty
-bool fileExistsAndNonEmpty(const std::string& filename) {
+bool fileExistsAndNonEmpty(const std::string &filename)
+{
     std::ifstream f(filename);
     return f.good() && f.peek() != std::ifstream::traits_type::eof();
 }
 
-int main() {
+int main()
+{
     std::cout << "=== Testing bloch_relax ===\n";
 
     // 1. Run the demo with default parameters
@@ -58,13 +60,14 @@ int main() {
 
     // 5. Check that decay occurs (read last line)
     std::string lastLine;
-    while (std::getline(file, lastLine)) {
+    while (std::getline(file, lastLine))
+    {
         // just loop to the end
     }
     double realLast, imagLast;
     std::stringstream ssLast(lastLine);
     ssLast >> realLast >> imagLast;
-    double magLast = std::sqrt(realLast*realLast + imagLast*imagLast);
+    double magLast = std::sqrt(realLast * realLast + imagLast * imagLast);
     // R2 values are 20 and 10, so after 0.2 s (20000 * 10µs) magnetization should be tiny
     assert(magLast < 0.1);
     std::cout << "Decay verified: |M+| at end = " << magLast << "\n";

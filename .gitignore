@@ -2,3 +2,5 @@ Sanae/tests/integration_test_fid.txt
 Sanae/tests/sanae_simulation.log
 Sanae/tests/single_spin_test.txt
 Sanae/tests/test_solution
+Sanae/tests/test_bloch_relax
+Sanae/tests/test_env

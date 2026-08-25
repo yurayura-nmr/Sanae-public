@@ -31,10 +31,9 @@ namespace Sanae
 		double w_mhz_ = 0;		// [MHz]          Larmor frequency
 
 		// Private method to calculate SFO1 from Larmor Frequency
-		void SetSFO1()
-		{
-			SFO1_ = 1.0 * w_mhz_ * 1E6;
-		}
+		void SetSFO1();
+
+		void UpdateLarmorFrequency();
 
 	public:
 		// Constructor

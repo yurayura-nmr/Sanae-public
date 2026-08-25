@@ -1,4 +1,4 @@
-//#include "Sanae.h"
+// #include "Sanae.h"
 #include "Environment.h"
 
 #include <iostream>
@@ -16,10 +16,21 @@ namespace Sanae
 		B0_ = customB0;
 
 		// Recalculate Larmor frequency based on current gamma
-		w_mhz_ = (-gamma_rads_ * B0_ / (2.0 * PI)) * 1e-6;
+		UpdateLarmorFrequency();
 
 		// Update cached SFO1_ from the new w_mhz_
 		SetSFO1();
+	}
+
+	void Environment::UpdateLarmorFrequency()
+	{
+		// Recalculate Larmor frequency based on current gamma
+		w_mhz_ = (-gamma_rads_ * B0_ / (2.0 * PI)) * 1e-6;
+	}
+
+	void Environment::SetSFO1()
+	{
+		SFO1_ = 1.0 * w_mhz_ * 1E6;
 	}
 
 	// ---------------------------------------------------------
@@ -34,24 +45,27 @@ namespace Sanae
 			break;
 
 		case 'N':
-			gamma_ = 4.31; // MHz/T  (15N)
+			gamma_ = -4.316; // MHz/T  (15N)
 			break;
 
 		case 'C':
 			gamma_ = 10.705; // MHz/T (13C)
 			break;
 
+		case 'F':
+			gamma_ = 40.05; // MHz/T (19F)
+			break;
+
 		default:
 			throw std::invalid_argument(
-				"Invalid nuclide. Use 'H' (1H), 'N' (15N), or 'C' (13C).");
+				"Invalid nuclide. Use 'H' (1H), 'N' (15N), 'C' (13C), or 'F' (19F).");
 		}
 
 		// Convert to (rad/s)/T
 		gamma_rads_ = gamma_ * 2.0 * PI * 1e6;
 
 		// Larmor frequency in MHz (signed)
-		w_mhz_ = (-gamma_rads_ * B0_ / (2.0 * PI)) * 1e-6;
-
+		UpdateLarmorFrequency();
 		SetSFO1();
 	}
 
@@ -61,9 +75,9 @@ namespace Sanae
 	void Environment::DisplayInfo() const
 	{
 		std::cout << "\n[ NMR Environment Parameters ]\n"
-				  << "Gamma           [MHz/T]      = " << gamma_ << "\n"
-				  << "Gamma   [(rad/s)/T]          = " << gamma_rads_ << "\n"
-				  << "B0              [T]          = " << B0_ << "\n"
+				  << "Gamma         [MHz/T]        = " << gamma_ << "\n"
+				  << "Gamma     [(rad/s)/T]        = " << gamma_rads_ << "\n"
+				  << "B0                [T]        = " << B0_ << "\n"
 				  << "Larmor (w/2pi)  [MHz]        = " << w_mhz_ << "\n"
 				  << "SFO1            [Hz]         = " << SFO1_ << "\n"
 				  << "SFO1            [MHz]        = " << SFO1_ / 1e6
