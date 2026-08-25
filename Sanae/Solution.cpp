@@ -52,6 +52,7 @@ namespace Sanae
 
 	void Solution::SetNumericPars()
 	{
+		// To do: delete function (these are now used as default pars)
 		// Set default numerical parameters for the simulation
 		// Note: Modifying these parameters may affect the time axis in sanaeplot.py; verify any changes
 		SetMethod(1);	 // Use Runge-Kutta (R-K) method

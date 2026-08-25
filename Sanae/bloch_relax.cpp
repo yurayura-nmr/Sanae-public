@@ -39,6 +39,6 @@ void bloch_relax(
 
 	// *** Set the exchange rates *** (no exchange)
 	Sanae::Solution sol(2);
-	sol.SetNumericPars();  // Uses default: dt=10µs, steps=20000, print=10
+	//sol.SetNumericPars();  // Uses default: dt=10µs, steps=20000, print=10
 	sol.SetupTwoState(A, B);
 }

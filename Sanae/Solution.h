@@ -33,10 +33,13 @@ namespace Sanae
 		Eigen::MatrixXcd K_; // Matrix representing exchange terms between states
 
 		// Numerical parameters for the simulation
-		double dt_ = 0.001;		 // Time step for the simulation (in seconds)
-		int num_steps_ = 2000;	 // Total number of time steps in the simulation
-		int printFrequency_ = 1; // Frequency of printing results
+		// double dt_ = 0.001;		 // Time step for the simulation (in seconds)
+		// int num_steps_ = 2000;	 // Total number of time steps in the simulation
 		int method_ = 1;		 // Integration method: 0 = Euler, 1 = Runge-Kutta
+		double dt_ = 0.00001;	 // 10 µs
+
+		int num_steps_ = 20000;	 // 0.2 seconds total
+		int printFrequency_ = 1; // Keep as 1 (or maybe 10 to reduce file size?)
 
 		std::string output_filename_ = "magnetization_evolution.txt";
 
