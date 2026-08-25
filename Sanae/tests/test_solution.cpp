@@ -1,4 +1,4 @@
-// g++ -std=c++17 -Wall -I/path/to/eigen -o test_solution ../Solution.cpp ../State.cpp ../Environment.cpp ../RungeKutta.cpp ../fileio.cpp test_solution.cpp
+//  g++ -std=c++17 -Wall -I../../include/eigen3/ -o test_solution ../Solution.cpp ../State.cpp ../Environment.cpp ../RungeKutta.cpp ../fileio.cpp test_solution.cpp
 
 #include "../Solution.h"
 #include "../State.h"
