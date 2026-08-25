@@ -2,6 +2,7 @@
 
 #include <Eigen/Core>
 #include <string>
+#include <vector>
 
 namespace Sanae
 {
@@ -25,6 +26,16 @@ namespace Sanae
                                   double dt,
                                   int num_steps,
                                   int printFrequency);
+
+    // Write a CLEANEX-PM simulated curve to a tab-separated file with a
+    // descriptive header. Returns false (and logs to stderr) on failure to open.
+    bool writeCleanexCurveToFile(const std::string &filename,
+                                 const std::vector<double> &tm_vec,
+                                 const std::vector<double> &I_vec,
+                                 double k,
+                                 double R1a,
+                                 double R1b,
+                                 double prefactor);
 
     /**
      * @brief Append a matrix to the simulation log file (sanae_simulation.log).

@@ -6,3 +6,5 @@ Sanae/tests/test_bloch_relax
 Sanae/tests/test_env
 Sanae/tests/magnetization_evolution.txt
 Sanae/tests/test_binding
+Sanae/tests/test_cleanex
+Sanae/tests/test_cleanex_basic.dat
