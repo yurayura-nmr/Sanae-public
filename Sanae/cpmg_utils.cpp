@@ -58,8 +58,7 @@ namespace DispersionUtils
 		const double dw2 = dw * dw;
 		const double kex2 = kex * kex;
 
-		const double pop = 1.0 - 2.0 * pB; // pa - pb
-		// or: const double pop = sqrt(1.0 - 4.0 * pA * pB);
+		const double pop = 1.0 - 2.0 * pB;
 
 		const double psi = kex2 - dw2;
 		const double zeta = 2.0 * dw * kex * pop;
@@ -435,8 +434,6 @@ namespace DispersionUtils
 				omega1_cur = nu1 * 2.0 * PI;
 				dOmega_cur = dOmega_fixed_rads;
 			}
-
-			// --- Miloushev-Bushweller Model Equations ---
 
 			// 1. Calculate specific state offsets relative to the carrier position
 			// Assumes carrier (dOmega_cur) is referenced to the population-weighted center.
