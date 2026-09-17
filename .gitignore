@@ -13,3 +13,5 @@ Sanae/tests/test_cr_13C.dat
 Sanae/tests/test_cr_nodw_13C.dat
 Sanae/tests/tmp/cpmg_utils.cpp
 Sanae/tests/tmp/cpmg_utils.h
+Sanae/tests/test_env.exe
+Sanae/tests/test_noise.exe
