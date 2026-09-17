@@ -212,8 +212,11 @@ namespace Sanae
 		if (method_ == 1)
 		{
 			// Solving dM/dt = A * M(0) using the 4th-order Runge-Kutta method
-			std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n"
-					  << std::endl;
+			if (verbose_)
+			{
+				std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n"
+						  << std::endl;
+			}
 			RungeKutta(A, M, dt_, num_steps_);
 
 			// Optional add noise
@@ -292,9 +295,11 @@ namespace Sanae
 		// Solve the ODE using the specified integration method
 		if (method_ == 1)
 		{
-			// Solve using 4th-order Runge-Kutta method
-			std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n"
-					  << std::endl;
+			if (verbose_)
+			{
+				std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n"
+						  << std::endl;
+			}
 			RungeKutta(A, M, dt_, num_steps_);
 		}
 
@@ -349,7 +354,10 @@ namespace Sanae
 		// --- Solve ODE dM/dt = A * M ------------------------------------------
 		if (method_ == 1)
 		{
-			std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n";
+			if (verbose_)
+			{
+				std::cout << "\n[... Solving d/dt M(t) = A * M(0) using Runge-Kutta method ...]\n";
+			}
 			RungeKutta(A, M, dt_, num_steps_);
 		}
 
