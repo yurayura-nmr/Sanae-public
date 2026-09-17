@@ -31,16 +31,18 @@ namespace Sanae
 	{
 	private:
 		Eigen::MatrixXcd K_; // Matrix representing exchange terms between states
+		Eigen::MatrixXcd last_magnetization_;
 
 		// Numerical parameters for the simulation
 		// double dt_ = 0.001;		 // Time step for the simulation (in seconds)
 		// int num_steps_ = 2000;	 // Total number of time steps in the simulation
-		int method_ = 1;		 // Integration method: 0 = Euler, 1 = Runge-Kutta
-		double dt_ = 0.00001;	 // 10 µs
+		int method_ = 1;	  // Integration method: 0 = Euler, 1 = Runge-Kutta
+		double dt_ = 0.00001; // 10 µs
 
 		int num_steps_ = 20000;	 // 0.2 seconds total
 		int printFrequency_ = 1; // Keep as 1 (or maybe 10 to reduce file size?)
-
+		
+		bool verbose_ = true;
 		std::string output_filename_ = "magnetization_evolution.txt";
 
 	public:
@@ -48,6 +50,7 @@ namespace Sanae
 		Solution(int size);
 
 		// Setters for customizing simulation parameters
+		void SetVerbose(bool verbose);
 		void SetMethod(const int method);
 		void SetPF(const int customPF);
 		void SetDT(const double customDT);
@@ -64,8 +67,10 @@ namespace Sanae
 		void SetupThreeState(Sanae::State &StateA, Sanae::State &StateB, Sanae::State &StateC);
 
 		int GetSteps() const;
-		Eigen::MatrixXcd GetK() const;
 		void DisplayInfo() const;
+		
+		Eigen::MatrixXcd GetK() const;
+		Eigen::MatrixXcd GetLastMagnetization() const;		
 
 		void SetOutputFilename(const std::string &filename);
 	};

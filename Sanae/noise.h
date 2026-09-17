@@ -8,11 +8,11 @@
  *
  * Models receiver noise in a real NMR experiment.
  * Here, noise is applied after numerical integration of the
- * Bloch-McConnell equations — it is purely an instrumental/observational 
+ * Bloch-McConnell equations — it is purely an instrumental/observational
  * effect, not part of the actual spin dynamics.
  *
  * Noise is drawn from N(0, sigma) independently for real and
- * imaginary components of each point 
+ * imaginary components of each point
  * (i.e, uncorrelated receiver noise on Mx and My channels).
  *
  * @note col=0 is never modified — it holds M(t=0), the initial

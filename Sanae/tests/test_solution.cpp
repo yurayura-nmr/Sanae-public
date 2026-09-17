@@ -43,6 +43,7 @@ int main() {
 
     // --- 3. Create Solution (2‑state) and set numerical parameters ---
     Solution sol(2);
+    
     sol.SetDT(0.0001);          // 100 µs per step
     sol.SetSteps(1000);         // total time = 0.1 s
     sol.SetPF(10);              // print every 10 steps

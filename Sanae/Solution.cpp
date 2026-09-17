@@ -86,6 +86,11 @@ namespace Sanae
 		return K_;
 	}
 
+	Eigen::MatrixXcd Solution::GetLastMagnetization() const
+	{
+		return last_magnetization_;
+	}
+
 	void Solution::SetMethod(const int /*method*/)
 	{
 		// Deprecated: only Runge-Kutta is supported.
@@ -94,13 +99,21 @@ namespace Sanae
 
 	void Solution::DisplayInfo() const
 	{
+		if (!verbose_)
+			return;
+
 		// Display key simulation parameters to the console
 		std::cout << "\nInformation on Solution (FID)\n"
 				  << "Integration timestep (= FID point spacing)   [s] = " << dt_ << "\n"
 				  << "Number of timesteps (= total FID points)         = " << num_steps_ << "\n"
 				  << "Output frequency                                 = " << printFrequency_ << "\n"
-				  << "Integration method (0: Euler | 1: Runge-Kutta)   = " << method_ << "\n"
+				  //<< "Integration method (0: Euler | 1: Runge-Kutta)   = " << method_ << "\n"
 				  << std::endl;
+	}
+
+	void Solution::SetVerbose(bool verbose)
+	{
+		verbose_ = verbose;
 	}
 
 	void Solution::SetCrossterm(const double k_ij, Sanae::State FirstState, Sanae::State SecondState)
@@ -187,9 +200,11 @@ namespace Sanae
 		A = R + GetK();
 
 		// Output the final matrix for inspection
-		std::cout << "[... Final matrix is set to ...] :\n"
-				  << A << "\n";
-
+		if (verbose_)
+		{
+			std::cout << "[... Final matrix is set to ...] :\n"
+					  << A << "\n";
+		}
 		// Output log to enable reproducibility
 		appendToLog("[... Initial magnetization is set to ...] :\n", M_zero);
 		appendToLog("[... Final matrix is set to ...] :\n", A);
@@ -264,8 +279,11 @@ namespace Sanae
 		A = R + GetK();
 
 		// Output the final matrix to be used in time evolution
-		std::cout << "[... Final matrix is set to ...] :\n"
-				  << A << "\n";
+		if (verbose_)
+		{
+			std::cout << "[... Final matrix is set to ...] :\n"
+					  << A << "\n";
+		}
 
 		// Output log to enable reproducibility
 		appendToLog("[... Initial magnetization is set to ...] :\n", M_zero);
@@ -322,8 +340,11 @@ namespace Sanae
 		appendToLog("[... Initial magnetization is set to ...] :\n", M_zero);
 		appendToLog("[... Final matrix is set to ...] :\n", A);
 
-		std::cout << "[... Final matrix is set to ...] :\n"
-				  << A << "\n";
+		if (verbose_)
+		{
+			std::cout << "[... Final matrix is set to ...] :\n"
+					  << A << "\n";
+		}
 
 		// --- Solve ODE dM/dt = A * M ------------------------------------------
 		if (method_ == 1)
@@ -336,16 +357,20 @@ namespace Sanae
 		Eigen::MatrixXcd M_plus = M; // For 1 state, M+ = M
 		Eigen::MatrixXcd M_plus_T = M_plus.transpose();
 
+		last_magnetization_ = M_plus; // for retrieval by callers/tests
+
 		// --- Output M(t) to file ----------------------------------------------
 		if (!writeMagnetizationToFile(M_plus, output_filename_, dt_, num_steps_, printFrequency_))
 		{
 			return;
 		}
 
-		// (Keep any debug prints you still want – these can also be removed for quiet output)
-		std::cout << "\n[... Magnetization at the start ...]\nM(0) = "
-				  << M_zero.real() << "\n";
-		std::cout << "\n[... Relaxation matrix for 1-state ...]\nA = "
-				  << A << "\n";
+		if (verbose_)
+		{
+			std::cout << "\n[... Magnetization at the start ...]\nM(0) = "
+					  << M_zero.real() << "\n";
+			std::cout << "\n[... Relaxation matrix for 1-state ...]\nA = "
+					  << A << "\n";
+		}
 	}
 }
