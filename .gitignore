@@ -19,3 +19,5 @@ Sanae/tests/bin/test_env.exe
 Sanae/tests/bin/test_noise.exe
 Sanae/tests/bin/test_r1_inversion_recovery.exe
 Sanae/tests/test_r1_inversion_recovery.exe
+Sanae/tests/test_numerical_solvers.exe
+Sanae/tests/test_numerical_solvers.obj
