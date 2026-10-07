@@ -21,3 +21,7 @@ Sanae/tests/bin/test_r1_inversion_recovery.exe
 Sanae/tests/test_r1_inversion_recovery.exe
 Sanae/tests/test_numerical_solvers.exe
 Sanae/tests/test_numerical_solvers.obj
+Sanae/tests/bin/test_zz_exchange.exe
+Sanae/tests/RungeKutta.obj
+Sanae/tests/test_zz_exchange.obj
+Sanae/tests/zz_exchange.obj
