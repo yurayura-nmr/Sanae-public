@@ -25,3 +25,5 @@ Sanae/tests/bin/test_zz_exchange.exe
 Sanae/tests/RungeKutta.obj
 Sanae/tests/test_zz_exchange.obj
 Sanae/tests/zz_exchange.obj
+Sanae/tests/test_cpmg_3state.exe
+Sanae/tests/test_cpmg_3state.obj
